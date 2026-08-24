@@ -14,13 +14,13 @@ jobs:
       uses: actions/checkout@v4
 
     - name: Set up JDK 17
-      uses: actions/setup-java@v3
+      uses: actions/setup-java@v4
       with:
         distribution: 'temurin'
         java-version: '17'
 
     - name: Set up Python 3.10
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.10'
 
@@ -32,10 +32,13 @@ jobs:
         pip install buildozer cython
 
     - name: Build APK with Buildozer
+      env:
+        ACCEPT_BUILD_TOOLS_CHECKSUMS: 1
       run: |
-        yes | buildozer -s android debug
+        buildozer -s android debug
 
     - name: Upload APK artifact
+      if: always()
       uses: actions/upload-artifact@v4
       with:
         name: python-autolock-apk
