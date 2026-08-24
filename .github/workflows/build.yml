@@ -24,7 +24,7 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install dependencies
+    - name: Install system dependencies
       run: |
         sudo apt-get update
         sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev
@@ -32,10 +32,16 @@ jobs:
         pip install buildozer cython
 
     - name: Build APK with Buildozer
-      env:
-        ACCEPT_BUILD_TOOLS_CHECKSUMS: 1
       run: |
-        buildozer -s android debug
+        # Pre-accept all Android SDK licenses automatically
+        mkdir -p ~/.android/
+        touch ~/.android/repositories.cfg
+        
+        # Run buildozer with auto-accept pipe
+        yes | buildozer -s android debug || true
+        
+        # Ensure build-tools are fully accepted if initial pass fails
+        yes | buildozer -s android debug
 
     - name: Upload APK artifact
       if: always()
