@@ -8,15 +8,16 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+    container:
+      image: kivy/buildozer:latest
 
     steps:
     - name: Checkout repository
       uses: actions/checkout@v4
 
-    - name: Build APK with Buildozer Action
-      uses: aksai-v/buildozer-action@v1
-      with:
-        command: buildozer -s android debug
+    - name: Build APK with Buildozer
+      run: |
+        buildozer -s android debug
 
     - name: Upload APK artifact
       uses: actions/upload-artifact@v4
