@@ -24,16 +24,23 @@ jobs:
       with:
         python-version: '3.10'
 
-    - name: Install System Dependencies & Pin Cython
+    - name: Install System Dependencies
       run: |
         sudo apt-get update
-        sudo apt-get install -y git zip unzip openjdk-17-jdk autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev build-essential
-        pip install --upgrade pip setuptools
-        pip install "cython==0.29.36" buildozer virtualenv
+        sudo apt-get install -y git zip unzip autoconf libtool pkg-config zlib1g-dev libncurses5-dev libncursesw5-dev libffi-dev libssl-dev build-essential cmake
+        pip install --upgrade pip
+        pip install "cython==0.29.36" buildozer
 
-    - name: Build APK with Buildozer
+    - name: Pre-accept Runner SDK Licenses
+      run: |
+        yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses || true
+        $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "build-tools;33.0.2" "platforms;android-33"
+
+    - name: Build APK using System SDK
       env:
         BUILDOZER_WARN_ON_ROOT: 0
+        ANDROID_SDK_ROOT: /usr/local/lib/android/sdk
+        ANDROID_HOME: /usr/local/lib/android/sdk
       run: |
         buildozer -v android debug
 
